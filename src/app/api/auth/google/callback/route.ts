@@ -2,20 +2,30 @@ import { NextRequest, NextResponse } from 'next/server'
 import { completeGoogleAuth } from '@/lib/google-oauth'
 import { createClient } from '@supabase/supabase-js'
 
-// Create a Supabase client with service role key for server-side operations
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!, // Use service role key to bypass RLS
-  {
+function createSupabaseAdminClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    return null
+  }
+
+  return createClient(supabaseUrl, serviceRoleKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
     }
-  }
-)
+  })
+}
 
 export async function GET(request: NextRequest) {
   try {
+    const supabaseAdmin = createSupabaseAdminClient()
+    if (!supabaseAdmin) {
+      console.error('Missing Supabase env vars for Google callback route.')
+      return NextResponse.redirect(new URL('/auth/signin?error=server_config', request.url))
+    }
+
     const { searchParams } = new URL(request.url)
     const code = searchParams.get('code')
     const state = searchParams.get('state')
@@ -54,6 +64,10 @@ export async function GET(request: NextRequest) {
       .eq('email', googleUser.email)
       .single()
 
+    if (profileError && profileError.code !== 'PGRST116') {
+      console.warn('Profile lookup warning:', profileError)
+    }
+
     if (existingProfile) {
       console.log('User already exists:', existingProfile)
       // Only update the profile image if it is not already set
@@ -80,6 +94,10 @@ export async function GET(request: NextRequest) {
 
     // Check if user exists in Supabase Auth
     const { data: existingAuthUsers, error: listError } = await supabaseAdmin.auth.admin.listUsers()
+    if (listError) {
+      console.error('Failed to list auth users:', listError)
+      return NextResponse.redirect(new URL('/auth/signin?error=auth_list_failed', request.url))
+    }
     
     let authUserId = null
     if (existingAuthUsers?.users) {

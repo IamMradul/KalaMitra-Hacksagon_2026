@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Search, Filter, ShoppingCart, Heart } from 'lucide-react'
+import { Search, Filter, ShoppingCart, Heart, Sparkles } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { logActivity } from '@/lib/activity'
@@ -26,6 +26,31 @@ type Product = ProductBase & {
   seller: {
     name: string
   }
+  isCollaborative?: boolean
+  collaborators?: {
+    id: string
+    name: string
+  }[]
+}
+
+type CollabJoin = {
+  product_id: string
+  // Supabase sometimes returns relation joins as arrays. Accept both shapes.
+  collaboration: ({
+    id: string
+    initiator_id: string
+    partner_id: string
+    status: string
+    initiator?: { id: string; name?: string }[] | { id: string; name?: string } | null
+    partner?: { id: string; name?: string }[] | { id: string; name?: string } | null
+  } | null) | ( {
+    id: string
+    initiator_id: string
+    partner_id: string
+    status: string
+    initiator?: { id: string; name?: string }[] | null
+    partner?: { id: string; name?: string }[] | null
+  }[] )
 }
 
 export default function Marketplace() {
@@ -56,6 +81,8 @@ function MarketplaceContent() {
   const [recommended, setRecommended] = useState<ProductBase[]>([])
   const [recLoading, setRecLoading] = useState(false)
   const [displayRecommended, setDisplayRecommended] = useState<ProductBase[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  const [showCollaborativeOnly, setShowCollaborativeOnly] = useState(false)
 
   useEffect(() => {
     // Handle Google session from OAuth callback
@@ -77,9 +104,45 @@ function MarketplaceContent() {
     fetchProducts()
   }, [searchParams])
 
+  // Debounce search to avoid too many API calls
   useEffect(() => {
-    filterProducts()
-  }, [products, searchTerm, selectedCategory])
+    // Don't filter if search is empty - handleSearchChange already handled it
+    if (searchTerm.trim() === '') {
+      return
+    }
+    
+    // Debounce the search by 300ms
+    const timer = setTimeout(() => {
+      filterProducts()
+    }, 300)
+    
+    return () => clearTimeout(timer)
+  }, [searchTerm])
+
+  // Filter when products or category changes (but not search term - handled above)
+  useEffect(() => {
+    // Only run if there's no active search term
+    if (searchTerm.trim() === '') {
+      filterProducts()
+    }
+  }, [products, selectedCategory, showCollaborativeOnly])
+
+  // Handle search input change with immediate reset for empty search
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setSearchTerm(value)
+    
+    // Immediately reset to all products when search is cleared
+    if (value.trim() === '') {
+      setIsSearching(false)
+      // Apply only category filter if selected, otherwise show all products
+      let filtered = products
+      if (selectedCategory) {
+        filtered = filtered.filter(product => product.category === selectedCategory)
+      }
+      setFilteredProducts(filtered)
+    }
+  }
 
   const fetchProducts = async () => {
     try {
@@ -113,10 +176,60 @@ function MarketplaceContent() {
 
       if (error) throw error
 
-  setProducts(data || [])
+      // Fetch collaborative products to enrich the data
+      const { data: collabData } = await supabase
+        .from('collaborative_products')
+        .select(`
+          product_id,
+          collaboration:collaborations(
+            id,
+            initiator_id,
+            partner_id,
+            status,
+            initiator:profiles!collaborations_initiator_id_fkey(id, name),
+            partner:profiles!collaborations_partner_id_fkey(id, name)
+          )
+        `)
+        .eq('collaboration.status', 'accepted')
+
+      // Create a map of product_id -> collaborators
+      const collabMap = new Map<string, { id: string, name: string }[]>()
+      // Helper: extract name from either an object or an array of objects returned by Supabase joins
+      const extractName = (val?: { name?: string } | { name?: string }[] | null) => {
+        if (!val) return undefined
+        if (Array.isArray(val)) return val[0]?.name
+        return val.name
+      }
+
+      collabData?.forEach((cp: CollabJoin) => {
+        const rawCollab = cp.collaboration
+        if (!rawCollab) return
+
+        // Normalize arrays to a single object if Supabase returned an array
+        const collObj = Array.isArray(rawCollab) ? rawCollab[0] : rawCollab
+
+        const initiatorName = extractName(collObj.initiator)
+        const partnerName = extractName(collObj.partner)
+
+        const collaborators = [
+          { id: collObj.initiator_id, name: initiatorName || 'Unknown' },
+          { id: collObj.partner_id, name: partnerName || 'Unknown' }
+        ]
+
+        collabMap.set(cp.product_id, collaborators)
+      })
+
+      // Enrich products with collaboration info
+      const enrichedProducts = (data || []).map(product => ({
+        ...product,
+        isCollaborative: collabMap.has(product.id),
+        collaborators: collabMap.get(product.id) || []
+      }))
+
+  setProducts(enrichedProducts)
       
       // Extract unique categories
-  const uniqueCategories = [...new Set(data?.map(p => p.category) || [])]
+  const uniqueCategories = [...new Set(enrichedProducts?.map(p => p.category) || [])]
   setCategories(uniqueCategories)
       
   setLoading(false)
@@ -126,10 +239,69 @@ function MarketplaceContent() {
     }
   }
 
-  const filterProducts = () => {
+  const filterProducts = async () => {
+    // If there's a search term, use semantic search
+    if (searchTerm && searchTerm.trim().length > 0) {
+      setIsSearching(true)
+      try {
+        const response = await fetch('/api/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: searchTerm }),
+        })
+
+        if (response.ok) {
+          const semanticResults = await response.json()
+          
+          // Enrich semantic results with seller and collaboration information from the products we already have
+          const enrichedResults = semanticResults.map((result: ProductBase) => {
+            const fullProduct = products.find(p => p.id === result.id)
+            return {
+              ...result,
+              seller: fullProduct?.seller || { name: 'Unknown' },
+              isCollaborative: fullProduct?.isCollaborative || false,
+              collaborators: fullProduct?.collaborators || []
+            } as Product
+          }).filter((p: Product | null): p is Product => p !== null)
+
+          // Apply category filter if selected
+          let filtered = enrichedResults
+          if (selectedCategory) {
+            filtered = filtered.filter((product: Product) => product.category === selectedCategory)
+          }
+
+          // Apply collaborative filter if selected
+          if (showCollaborativeOnly) {
+            filtered = filtered.filter((product: Product) => product.isCollaborative)
+          }
+
+          setFilteredProducts(filtered)
+        } else {
+          // Fallback to client-side filtering if API fails
+          console.warn('Semantic search API failed, falling back to client-side search')
+          clientSideFilter()
+        }
+      } catch (error) {
+        console.error('Error during semantic search:', error)
+        // Fallback to client-side filtering
+        clientSideFilter()
+      } finally {
+        setIsSearching(false)
+      }
+    } else {
+      // No search term, reset to client-side filtering with all products
+      setIsSearching(false)
+      clientSideFilter()
+    }
+  }
+
+  const clientSideFilter = () => {
     let filtered = products
 
-    if (searchTerm) {
+    // Only apply search filter if searchTerm is not empty
+    if (searchTerm && searchTerm.trim().length > 0) {
       filtered = filtered.filter(product =>
         product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -137,11 +309,25 @@ function MarketplaceContent() {
       )
     }
 
+    // Apply category filter if selected
     if (selectedCategory) {
       filtered = filtered.filter(product => product.category === selectedCategory)
     }
 
-  setFilteredProducts(filtered)
+    // Apply collaborative filter if selected
+    if (showCollaborativeOnly) {
+      filtered = filtered.filter(product => product.isCollaborative)
+    }
+
+    console.log('Client-side filter:', { 
+      searchTerm, 
+      selectedCategory,
+      showCollaborativeOnly, 
+      totalProducts: products.length, 
+      filteredCount: filtered.length 
+    })
+    
+    setFilteredProducts(filtered)
   }
   // Translate product titles/categories and category list for display when language changes
   useEffect(() => {
@@ -428,6 +614,15 @@ function MarketplaceContent() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="heritage-card p-6 mb-8 border border-heritage-gold/40"
         >
+          {/* AI Helper Text */}
+          <div className="mb-4 flex items-center justify-center gap-2 text-sm text-gray-600">
+            <Sparkles className="w-4 h-4 text-orange-500" />
+            <span>
+              Try our <span className="font-semibold text-orange-600">AI Assistant</span> for smarter recommendations!
+            </span>
+            <span className="text-gray-400">→ Click the 💬 button in bottom-right corner</span>
+          </div>
+          
           <div className="grid md:grid-cols-2 gap-4">
             {/* Search */}
             <div className="relative">
@@ -436,9 +631,14 @@ function MarketplaceContent() {
                 type="text"
                 placeholder={t('marketplace.searchInputPlaceholder')}
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                onChange={handleSearchChange}
+                className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
+              {isSearching && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="w-5 h-5 border-2 border-orange-200 border-t-orange-600 rounded-full animate-spin"></div>
+                </div>
+              )}
             </div>
 
             {/* Category Filter */}
@@ -458,6 +658,21 @@ function MarketplaceContent() {
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* Collaborative Filter Toggle */}
+          <div className="mt-4 flex items-center justify-center">
+            <button
+              onClick={() => setShowCollaborativeOnly(!showCollaborativeOnly)}
+              className={`px-4 py-2 rounded-lg font-medium transition-transform duration-200 ease-out transform will-change-transform flex items-center gap-2 shadow-sm hover:-translate-y-3.5 hover:scale-[1.02] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-orange-200 ${
+                showCollaborativeOnly
+                  ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-md border-yellow-500'
+                  : 'bg-white hover:border-gray-400 dark:hover:border-gray-500'
+              }`}
+              aria-pressed={showCollaborativeOnly}
+            >
+              🤝 {showCollaborativeOnly ? 'Showing Collaborative Only' : 'Show Collaborative Products'}
+            </button>
           </div>
         </motion.div>
 
@@ -481,10 +696,17 @@ function MarketplaceContent() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200 hover:scale-105"
+                  className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200 hover:scale-105 `}
                 >
                   <Link href={`/product/${product.id}`}>
-                    <div className="h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
+                    <div className="relative h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
+                      {/* Collaboration Badge */}
+                      {product.isCollaborative && (
+                        <div className="absolute top-2 right-2 z-10 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+                          🤝 Collab
+                        </div>
+                      )}
+                      
                       {product.image_url ? (
                         <img
                           src={product.image_url}
@@ -492,8 +714,14 @@ function MarketplaceContent() {
                           className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center">
-                          <span className="text-orange-400 text-4xl">🎨</span>
+                        <div className={`w-full h-full bg-gradient-to-br flex items-center justify-center ${
+                          product.isCollaborative 
+                            ? 'from-yellow-100 to-orange-100' 
+                            : 'from-orange-100 to-red-100'
+                        }`}>
+                          <span className={`text-4xl ${
+                            product.isCollaborative ? 'text-yellow-500' : 'text-orange-400'
+                          }`}>🎨</span>
                         </div>
                       )}
                     </div>
@@ -507,19 +735,33 @@ function MarketplaceContent() {
                     </Link>
                     
                     <p className="text-sm text-gray-600 mb-2">{displayProducts.find(p => p.id === product.id)?.category || product.category}</p>
-                    <p className="text-xs text-gray-500 mb-3">
-                      {(() => {
-                        const sellerName = product.seller?.name || ''
-                        const translatedName = translatedSellerNames[sellerName] || sellerName
-                        console.log('Displaying seller name:', { original: sellerName, translated: translatedName, mapping: translatedSellerNames })
-                        return t('product.byAuthor', { 
-                          name: translatedName || t('product.unknownArtisan') 
-                        })
-                      })()}
-                    </p>
+                    
+                    {/* Show collaborators or single seller */}
+                    {product.isCollaborative && product.collaborators && product.collaborators.length > 0 ? (
+                      <div className="text-xs mb-3   p-3 rounded-md border border-yellow-200/90 dark:border-yellow-700/30 shadow-sm">
+                        <p className="font-medium mb-1 text-yellow-800 dark:text-gray-300">🤝 Collaboration by:</p>
+                        <div className="space-y-0.5">
+                          {product.collaborators.map((collab) => (
+                            <p key={collab.id} className="text-yellow-800 dark:text-yellow-400 font-semibold">
+                              • {translatedSellerNames[collab.name] || collab.name}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                        {(() => {
+                          const sellerName = product.seller?.name || ''
+                          const translatedName = translatedSellerNames[sellerName] || sellerName
+                          return t('product.byAuthor', { 
+                            name: translatedName || t('product.unknownArtisan') 
+                          })
+                        })()}
+                      </p>
+                    )}
                     
                     <div className="flex items-center justify-between">
-                      <p className="text-lg font-bold text-orange-600">₹{product.price}</p>
+                      <p className="text-lg font-bold text-orange-600 dark:text-orange-400">₹{product.price}</p>
                       <div className="flex space-x-2">
                         <button
                           onClick={() => addToCart(product.id)}

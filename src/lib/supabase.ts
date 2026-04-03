@@ -1,22 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-const fallbackSupabaseUrl = 'https://placeholder.supabase.co'
-const fallbackSupabaseAnonKey = 'placeholder-anon-key'
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn(
-    'Supabase env vars are missing. Using a placeholder client so build-time imports do not crash. ' +
-      'Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY for full functionality.'
-  )
-}
-
-export const supabase = createClient(
-  supabaseUrl ?? fallbackSupabaseUrl,
-  supabaseAnonKey ?? fallbackSupabaseAnonKey
-)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export type Database = {
   public: {

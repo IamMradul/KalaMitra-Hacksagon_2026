@@ -81,7 +81,8 @@
       "noReels": "No reels found.",
       "likes": "Likes",
       "delete": "Delete",
-      "caption": "Caption"
+      "caption": "Caption",
+      "comment": "Comment"
     },
   "navigation": {
     "home": "Home",
@@ -292,6 +293,7 @@
   "yourProducts": "Your Products",
   "loadingProducts": "Loading products...",
   "noProducts": "No products yet",
+  "manageReels": "Manage Reels",
   "startByAddingFirst": "Start by adding your first product",
     "analyticsShort": {
       "stallViews30d": "Stall views (30d)",
@@ -507,5 +509,9 @@
   ,
   "brand": {
     "name": "KalaMitra"
-  }
+  },
+  "leaderboard": {
+  "title": "Leaderboard",
+  "desc": "Top buyers by MitraPoints (awarded for auction wins)."
+}
 }

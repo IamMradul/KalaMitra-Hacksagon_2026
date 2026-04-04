@@ -39,26 +39,37 @@
 
 
 ### 🧑‍🎨 Seller Features
-- <b>Virtual Stall Management</b>: Create and customize your artisan profile 
-- <b>Product Management</b>: Add, edit, and delete products
+- <b>Virtual Stall Management</b>: Create and customize your artisan profile with a personalized 3D stall. 
+- <b>Product Management</b>: Add, edit, and delete products 
+- <b>Virtual Products</b>:Design and sell digital creations such as Kolams, templates, and craft designs.
+- <b>Collaborate</b>: Partner with your favorite creators or sellers to grow together
 - <b>Auctions</b>: Create and manage live auctions for products
 - <b>Reels</b>: Showcase artisan stories and products with short video reels 
 - <b>AI Tools</b>: Photo enhancement, story generation, and smart recommendations 
 - <b>Public Stall Pages</b>: Shareable stall URLs for customers
 - <b>Seller Analytics</b>: Track performance and sales
-- <b>Notifications</b>: Real-time updates for bids, sales, and activity
+- <b>Notifications</b>: Real-time updates for bids, sales, and all activity
 
 
 ### 🛍️ Buyer Features
 - <b>Marketplace Browsing</b>: Discover unique handcrafted items
-- <b>Advanced Search & Filtering</b>: Find products by category, name, or description  
-- <b>Product Details</b>: Rich product pages with artisan information
+- <b>Advanced Search & Filtering</b>: Use Semantic Search or browse by category, name, or description.
+- <b>Product Details</b>: Explore rich product pages with artisan profiles, narrated stories, gifting options, and custom craft requests.
 - <b>Shopping Cart</b>: Add items and manage quantities <img width="181" height="272" align='right' alt="Screenshot 2025-09-20 010627" src="https://github.com/user-attachments/assets/172a5e74-9b82-4de7-85e7-b48709823ea2" />
-- <b>Artisan Discovery</b>: Explore individual seller stalls
+- <b>Artisan Discovery</b>: Explore individual seller stalls 
+- <b>Mic Support</b>: No need to type — simply speak in any Indian language for searches or interactions.
 - <b>Auctions</b>: Participate in live auctions and place bids
 - <b>Leaderboard</b>: See top sellers and trending products   
 - <b>Notifications</b>: Real-time updates for bids, purchases, and offers
-- <b>Recommendations</b>: AI-powered suggestions for products and artisans     
+- <b>Recommendations</b>: Get AI-powered suggestions based on preferences and activity.
+- <b>Gifting Options</b>: Individual & group gifting with custom messages
+- <b>Custom Craft Requests</b>: Buyers can request personalized handmade or digital crafts
+- <b>Chat & Group Chat</b>: Direct communication between buyers & artisans
+- <b>Follow Feature</b>: Build artisan communities & loyal buyer base
+- <b>AR Product Visualization</b>: View crafts in real-world spaces before buying
+- <b>AI Shopping Assistant</b>: RAG chatbot for search, filters & smart follow-ups
+- <b>Story Narration</b>: Listen to stories behind products in marketplace and product page 
+- <b>3D Bazaar</b>: Immersive virtual marketplace with customizable stalls
 
 
 ### 🎭 Cultural Theme & Design
@@ -68,6 +79,7 @@
 - <b>Smooth Animations</b>: Framer Motion for delightful user experience
 - <b>Multi-language Support</b>: Built-in translation for Indian languages
 - <b>Debug Tools</b>: Integrated debug and translation test pages for developers
+- <b> Cron Jobs</b>: Auto-cleanup + auction end automation for smooth ops
 
 ---
 
@@ -108,54 +120,115 @@
 
 ```text
 KalaMitra/
+│
+├── public/
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
 ├── src/
 │   ├── app/
-│   │   ├── favicon.ico
-│   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   ├── page.tsx
 │   │   ├── api/
+│   │   │   ├── ai-chat/
+│   │   │   │   ├── delete/
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
 │   │   │   ├── auction/
-│   │   │   │   ├── route.ts
 │   │   │   │   ├── bid/
 │   │   │   │   │   └── route.ts
 │   │   │   │   ├── cron/
-│   │   │   │   │   └── end/
-│   │   │   │   │       └── route.ts
+│   │   │   │   │   ├── end/
+│   │   │   │   │   │   └── route.ts
+│   │   │   │   │   └── route.ts
 │   │   │   │   ├── end/
 │   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
 │   │   │   ├── auth/
-│   │   │   │   └── google/
-│   │   │   │       └── callback/
-│   │   │   │           └── route.ts
+│   │   │   │   ├── google/
+│   │   │   │   │   ├── callback/
+│   │   │   │   │   │   └── route.ts
+│   │   │   │   │   └── route.ts
+│   │   │   ├── backfill-embeddings/
+│   │   │   │   └── route.ts
+│   │   │   ├── chat/
+│   │   │   │   ├── message/
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── messages/
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── thread/
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── threads/
+│   │   │   │   │   └── route.ts
+│   │   │   ├── cleanup-activity/
+│   │   │   │   └── route.ts
+│   │   │   ├── collaboration/
+│   │   │   │   ├── end/
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── list/
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── products/
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── request/
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── respond/
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── search-sellers/
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── split-proposal/
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── route.ts
+│   │   │   ├── custom-request/
+│   │   │   │   └── route.ts
 │   │   │   ├── generate-ad/
+│   │   │   │   └── route.ts
+│   │   │   ├── generate-story/
+│   │   │   │   └── route.ts
+│   │   │   ├── generate-tutorial-pdf/
+│   │   │   │   └── route.ts
+│   │   │   ├── gift/
 │   │   │   │   └── route.ts
 │   │   │   ├── leaderboard/
 │   │   │   │   └── route.ts
+│   │   │   ├── placeholder/
+│   │   │   │   └── route.ts
 │   │   │   ├── recommendations/
 │   │   │   │   └── route.ts
-│   │   │   ├── translate/
+│   │   │   ├── refine-tutorial/
 │   │   │   │   └── route.ts
+│   │   │   ├── removebg/
+│   │   │   │   └── route.ts
+│   │   │   ├── search/
+│   │   │   │   └── route.ts
+│   │   │   └── translate/
+│   │   │       └── route.ts
 │   │   ├── auctions/
 │   │   │   └── page.tsx
 │   │   ├── auth/
 │   │   │   ├── signin/
 │   │   │   │   └── page.tsx
-│   │   │   ├── signup/
-│   │   │   │   └── page.tsx
+│   │   │   └── signup/
+│   │   │       └── page.tsx
 │   │   ├── cart/
 │   │   │   └── page.tsx
 │   │   ├── dashboard/
-│   │   │   ├── page.tsx
-│   │   │   ├── seller/
-│   │   │   │   ├── page.tsx
-│   │   │   │   ├── ProfileManager.tsx
-│   │   │   │   ├── SellerAnalytics.tsx
-│   │   │   │   ├── SellerAuctionsList.tsx
-│   │   │   │   └── reels/
-│   │   │   │       └── page.tsx
-│   │   ├── debug/
+│   │   │   └── seller/
+│   │   │       ├── reels/
+│   │   │       │   └── page.tsx
+│   │   │       ├── CollaborationManager.tsx
+│   │   │       ├── CollaborativeProductsManager.tsx
+│   │   │       ├── ProfileManager.tsx
+│   │   │       ├── RevenueSplitManager.tsx
+│   │   │       ├── SellerAnalytics.tsx
+│   │   │       ├── SellerAuctionsList.tsx
+│   │   │       └── page.tsx
+│   │   ├── dm/
 │   │   │   └── page.tsx
+│   │   ├── gifts/
+│   │   │   └── page.tsx
+│   │   ├── group-gift/
+│   │   │   └── [id]/
+│   │   │       └── page.tsx
 │   │   ├── leaderboard/
 │   │   │   └── page.tsx
 │   │   ├── marketplace/
@@ -163,80 +236,104 @@ KalaMitra/
 │   │   ├── notifications/
 │   │   │   └── page.tsx
 │   │   ├── product/
-│   │   │   ├── [id]/
-│   │   │   │   └── page.tsx
+│   │   │   └── [id]/
+│   │   │       └── page.tsx
 │   │   ├── profile/
-│   │   │   ├── page.tsx
 │   │   │   ├── [user_id]/
 │   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
 │   │   ├── reels/
 │   │   │   └── page.tsx
 │   │   ├── stall/
-│   │   │   ├── [id]/
-│   │   │   │   └── page.tsx
+│   │   │   └── [id]/
+│   │   │       └── page.tsx
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
 │   ├── components/
+│   │   ├── AIChatConditional.tsx
 │   │   ├── AIProductForm.tsx
+│   │   ├── AIShoppingChat.tsx
+│   │   ├── ARViewer.tsx
 │   │   ├── AuctionWidget.tsx
+│   │   ├── DMChat.tsx
 │   │   ├── Footer.tsx
+│   │   ├── GroupGiftContribution.tsx
+│   │   ├── GroupGiftModal.tsx
 │   │   ├── LanguageProvider.tsx
 │   │   ├── Leaderboard.tsx
+│   │   ├── Market3DButton.tsx
+│   │   ├── MarketplaceNavigator3D.tsx
+│   │   ├── MarketplaceStalls3D.tsx
+│   │   ├── MessageInputModal.tsx
 │   │   ├── MotionWrapper.tsx
 │   │   ├── Navbar.tsx
 │   │   ├── NotificationsList.tsx
+│   │   ├── ShareModal.tsx
+│   │   ├── StallCustomizationModal.tsx
 │   │   ├── ThemeProvider.tsx
+│   │   ├── ThreeDStall.tsx
 │   │   ├── TranslationDebug.tsx
 │   │   ├── TranslationTest.tsx
+│   │   ├── VideoPlayer.tsx
+│   │   └── VirtualProductForm.tsx
 │   ├── contexts/
 │   │   └── AuthContext.tsx
 │   ├── lib/
+│   │   ├── locales/
+│   │   │   ├── assamese.json
+│   │   │   ├── bengali.json
+│   │   │   ├── bodo.json
+│   │   │   ├── dogri.json
+│   │   │   ├── en.json
+│   │   │   ├── gujarati.json
+│   │   │   ├── hi.json
+│   │   │   ├── kannad.json
+│   │   │   ├── kashmiri.json
+│   │   │   ├── konkani.json
+│   │   │   ├── maithili.json
+│   │   │   ├── malyalam.json
+│   │   │   ├── manipuri.json
+│   │   │   ├── marathi.json
+│   │   │   ├── nepali.json
+│   │   │   ├── oriya.json
+│   │   │   ├── punjabi.json
+│   │   │   ├── sanskrit.json
+│   │   │   ├── santhali.json
+│   │   │   ├── sindhi.json
+│   │   │   ├── tamil.json
+│   │   │   ├── telgu.json
+│   │   │   └── urdu.json
 │   │   ├── activity.ts
 │   │   ├── ai-service.ts
+│   │   ├── chat-parser.ts
+│   │   ├── embedding-service.ts
 │   │   ├── google-oauth.ts
 │   │   ├── i18n.ts
 │   │   ├── image-similarity.ts
+│   │   ├── llm-generator.ts
 │   │   ├── supabase.ts
-│   │   ├── translate.ts
-│   │   └── locales/
-│   │       ├── assamese.json
-│   │       ├── bengali.json
-│   │       ├── bodo.json
-│   │       ├── dogri.json
-│   │       ├── en.json
-│   │       ├── gujarati.json
-│   │       ├── hi.json
-│   │       ├── kannad.json
-│   │       ├── kashmiri.json
-│   │       ├── konkani.json
-│   │       ├── maithili.json
-│   │       ├── malyalam.json
-│   │       ├── manipuri.json
-│   │       ├── marathi.json
-│   │       ├── nepali.json
-│   │       ├── oriya.json
-│   │       ├── punjabi.json
-│   │       ├── sanskrit.json
-│   │       ├── santhali.json
-│   │       ├── sindhi.json
-│   │       ├── tamil.json
-│   │       ├── telgu.json
-│   │       ├── urdu.json
-├── public/
-│   ├── file.svg
-│   ├── globe.svg
-│   ├── next.svg
-│   ├── vercel.svg
-│   ├── window.svg
+│   │   └── translate.ts
+│   ├── types/
+│   │   ├── product.ts
+│   │   ├── speech.d.ts
+│   │   └── three-shims.d.ts
+│   └── utils/
+│       ├── marketplaceScene.ts
+│       ├── stallScene.ts
+│       └── three-types.ts
+├── .gitignore
+├── README.md
 ├── eslint.config.mjs
-├── GOOGLE_OAUTH_SETUP.md
-├── next-env.d.ts
 ├── next-i18next.config.js
 ├── next.config.ts
+├── package-lock.json
 ├── package.json
 ├── postcss.config.mjs
-├── README.md
 ├── tailwind.config.js
 ├── tsconfig.json
-├── vercel.json
+└── vercel.json
 ```
 
 
@@ -249,27 +346,35 @@ KalaMitra/
 
 ### 👩‍🎨 For Artisans (Sellers)
 1. <b>Sign up</b> as a Seller <img width="320" height="283" align='right' alt="Screenshot 2025-09-20 012059" src="https://github.com/user-attachments/assets/0b54d0aa-9f8e-466c-8165-788bc9c7e169" />
-2. <b>Create your virtual stall</b> with bio and profile image
-3. <b>Add products</b> with titles, categories, descriptions, and prices  
-4. <b>Manage your inventory</b> and view analytics from the seller dashboard
-5. <b>Share your stall</b> with customers using the public URL
-6. <b>Create and manage auctions</b> for your products
-7. <b>Showcase reels</b> to tell your artisan story
-8. <b>Receive notifications</b> for bids, sales, and activity
-9. <b>Leverage AI tools</b> for product recommendations, photo enhancement, and story generation
-10. <b>Access multi-language support</b> for wider reach
+2. <b>Create your Virtual Stall</b> — personalize it with your bio, banner, and 3D stall view.
+3. <b>Add products</b> (physical or digital) with descriptions, titles, prices, and categories.  
+4. <b>Collaborate</b> with other artisans or creators for co-selling or combined auctions.
+5. <b>Showcase Reels</b> — post short videos and product ads to attract buyers.
+6. <b>Run Live Auctions</b> and engage buyers through real-time bidding.
+7. <b>Leverage AI Tools</b> for photo enhancement, story generation, and smart pricing.
+8. <b>Monitor Analytics</b> — view your dashboard to track sales, visitors, and engagement.
+9. <b>Engage via Chat</b> or group chat with buyers for orders or collaborations.
+10. <b>Receive Notifications</b> for every sale, bid, or auction activity.
+11. <b>Multi-language Support</b> to reach buyers from all regions easily.
+
 
 ### 🛍️ For Art Lovers (Buyers) 
 1. <b>Sign up</b> as a Buyer  <img width="200" height="200" align='right' alt="Screenshot 2025-09-20 014235" src="https://github.com/user-attachments/assets/1e774aca-59b8-4901-9e6f-93cd9d10d783" />
-2. <b>Browse the marketplace</b> for unique handcrafted items
-3. <b>Search and filter</b> products by category or keywords
-4. <b>View product details</b> and artisan information
-5. <b>Add items to cart</b> and manage your shopping list
-6. <b>Participate in live auctions</b> and place bids
-7. <b>Watch reels</b> to discover artisan stories
-8. <b>Get notifications</b> for bids, purchases, and offers
-9. <b>Receive smart AI-powered recommendations</b> for products and artisans
-10. <b>Use multi-language support</b> for a personalized experience
+2. <b>Browse the Marketplace</b> — discover heritage products and artisan stories.
+3. <b>Use Mic Input</b> — speak in your preferred Indian language instead of typing.
+4. <b>Search Products</b> via <b>Semantic Search</b> (e.g., “Diwali décor”, “painted diyas”).
+5. <b>Use the AI Shopping Assistant</b> — a RAG chatbot for smart search and help.
+6. <b>View Product Details</b> — learn the story behind each product with audio narration.
+7. <b>AR Product Visualization</b> — preview items in your real-world space before buying.
+8. <b>Explore 3D Bazaar</b> — walk through a virtual marketplace with interactive stalls.
+9. <b>Add Items to Cart</b> and manage your wishlist or active bids.
+10. <b>Participate in Live Auctions</b> and compete in leaderboards.
+11. <b>Send Gifts</b> — choose group or individual gifting with personal messages.
+12. <b>Request Custom Crafts</b> directly from artisans for personalized creations.
+13. <b>Follow Artisans</b> and join communities for updates on new collections.
+14. <b>Get Real-time Notifications</b> for offers, auctions, and purchases.
+15. <b>Enjoy Smart Recommendations</b> based on preferences and purchase history.
+16. <b>Multi-language & Audio Support</b> — hear stories, product details, and chatbot responses in any Indian language.
 
 
 ---
@@ -283,6 +388,7 @@ KalaMitra is powered by advanced AI capabilities: <img width="208" height="202" 
 - <b>AI Story Generation</b>: Automated product storytelling
 - <b>Smart Recommendations</b>: ML-powered suggestions for buyers and sellers
 - <b>Image Recognition</b>: Automatic product categorization
+- <b>Multi-language Support</b>: Built-in translation for Indian languages
 
 All AI features are fully implemented and ready to use!
 

@@ -1,4 +1,4 @@
-
+  
 {
   "aiChat": {
     "greetingLoggedIn": "👋 नमस्ते! मैं आपका एआई शॉपिंग असिस्टेंट हूँ। मैं आपकी पसंद के अनुसार बेहतरीन उत्पाद खोजने में मदद कर सकता हूँ!\n\n💾 आपकी बातचीत सेव हो जाती है और जब आप लौटेंगे तो यहाँ उपलब्ध रहेगी।\n\nमुझसे पूछें:\n• '1000 के अंदर दिवाली डेकोरेशन दिखाओ'\n• 'पारंपरिक हस्तशिल्प खोजो'\n• 'मुझे अपने दोस्त के लिए गिफ्ट चाहिए'",
@@ -11,6 +11,23 @@
     "analyzingProducts": "एआई उत्पादों का विश्लेषण कर रहा है...",
     "inputPlaceholder": "कुछ भी पूछें..."
   },
+  "donate": {
+    "modalTitle": "एनजीओ के लिए वस्तु दान करें",
+    "itemName": "वस्तु का नाम",
+    "itemCategory": "श्रेणी",
+    "itemDescription": "विवरण",
+    "images": "छवियाँ",
+    "pickupAddress": "पिकअप पता",
+    "donorName": "आपका नाम",
+    "donorEmail": "आपका ईमेल",
+    "donorPhone": "फ़ोन",
+    "preferredContact": "पसंदीदा संपर्क",
+    "submitBtn": "अब दान करें",
+    "submitting": "सबमिट हो रहा है...",
+    "successMsg": "आपके दान के लिए धन्यवाद! हम आपके समर्थन की सराहना करते हैं।",
+    "closeModal": "बंद करें"
+  },
+
   "stallCustomizationModal": {
     "title": "3D स्टॉल कस्टमाइज़ करें",
     "loading": "कस्टमाइज़ेशन लोड हो रहा है...",
@@ -468,7 +485,24 @@
   "noProducts": "अभी तक कोई उत्पाद नहीं",
   "startByAddingFirst": "अपना पहला उत्पाद जोड़कर शुरू करें",
   "manageReels": "अपना रील्स प्रबंधन करें",
-        "customRequestsTab": "कस्टम अनुरोध",
+      "schemeConnectTab": "योजना कनेक्ट",
+      "schemeConnectSectionTitle": "योजना कनेक्ट",
+      "schemeConnectDescription": "सरकारी और निजी योजनाओं की जानकारी प्राप्त करें और अपने व्यवसाय के लिए आवेदन करें। नवीनतम अवसरों के साथ अपडेट रहें!",
+      "schemeConnectLoading": "योजनाएँ लोड हो रही हैं...",
+      "schemeConnectNone": "इस समय कोई योजना नहीं मिली।\nकृपया बाद में पुनः प्रयास करें!",
+      "schemeConnectEligibility": "पात्रता:",
+      "schemeConnectDeadline": "अंतिम तिथि:",
+    "schemeConnectLearnMore": "और जानें / आवेदन करें",
+    "donationMarkClaimed": "क्लेम किया गया चिह्नित करें",
+    "donationMarkClaimedTooltip": "यदि आपने यह वस्तु प्राप्त कर ली है, तो इसे क्लेम किया गया चिह्नित करें। यह उत्पाद दूसरों के लिए उपलब्ध नहीं रहेगा।",
+    "donationAlreadyClaimed": "पहले ही क्लेम किया गया",
+    "donationAlreadyClaimedTooltip": "यह दान पहले ही किसी विक्रेता द्वारा क्लेम किया जा चुका है। उत्पाद उपलब्ध नहीं है।",
+    "liveDonationsSectionTitle": "उपलब्ध दान की गई वस्तुएं",
+    "liveDonationsSectionHint": "आप इन दान की गई वस्तुओं को क्लेम कर सकते हैं और अपने स्टॉल के लिए उत्पाद बना सकते हैं।",
+    "donationDonor": "दाता",
+    "donationContact": "संपर्क",
+    "donationPickupAddress": "पिकअप पता",
+      "customRequestsTab": "कस्टम अनुरोध",
       "customRequestsTabMobile": "कस्टम अनुरोध",
       "customRequestsSectionTitle": "कस्टम शिल्प अनुरोध",
       "customRequestsLoading": "कस्टम अनुरोध लोड हो रहे हैं...",
@@ -913,6 +947,7 @@
       },
   "home": {
   "badgeHeritage": "प्रामाणिक भारतीय विरासत",
+   "donateFloatingButtonTooltip": "एनजीओ या कारीगरों के लिए वस्तुएं दान करें ताकि वे उनका सर्वोत्तम उपयोग कर सकें!",
   "mainTitle": "खोजें कलामित्र",
   "subtitleMain": "जहाँ परंपरा मिलती है आधुनिकता से",
   "subtitleExplore": "हमारे क्यूरेटेड संग्रह में प्रामाणिक भारतीय पारंपरिक वस्तुएँ खोजें, जो कुशल कारीगरों द्वारा हस्तनिर्मित हैं और हमारे अभिनव ई-कॉमर्स प्लेटफॉर्म के माध्यम से आपके पास लाई जाती हैं।",

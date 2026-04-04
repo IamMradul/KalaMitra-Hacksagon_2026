@@ -10,6 +10,7 @@ import { hammingDistanceHex as hammingHex } from '@/lib/image-similarity'
 import { Database } from '@/lib/supabase'
 import Link from 'next/link'
 import Market3DButton from '@/components/Market3DButton'
+import ARViewer from '@/components/ARViewer'
 import type { Product as ThreeProduct } from '@/types/product'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
@@ -65,6 +66,7 @@ export default function Marketplace() {
 }
 
 function MarketplaceContent() {
+  // Helper: map category to AR orientation
   // Voice narration state
   const [narratingId, setNarratingId] = useState<string | null>(null)
   const synthRef = useRef<SpeechSynthesis | null>(typeof window !== 'undefined' ? window.speechSynthesis : null)
@@ -132,6 +134,10 @@ function MarketplaceContent() {
   const [displayRecommended, setDisplayRecommended] = useState<ProductBase[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [showCollaborativeOnly, setShowCollaborativeOnly] = useState(false)
+  // AR modal state
+  const [arOpen, setArOpen] = useState(false)
+  const [arImageUrl, setArImageUrl] = useState<string | undefined>(undefined)
+  const [arProductType, setArProductType] = useState<'vertical' | 'horizontal'>('vertical')
 
     // Speech recognition for search input
     const [isListening, setIsListening] = useState(false)
@@ -718,7 +724,7 @@ function MarketplaceContent() {
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
             <div>
               <h1 className="text-4xl font-bold heritage-title mb-1">
                 {t('marketplace.title')}
@@ -727,21 +733,23 @@ function MarketplaceContent() {
                 {t('marketplace.subtitle')}
               </p>
             </div>
-            <Market3DButton
-              products={filteredProducts.map(p => ({
-                ...p,
-                name: typeof p.title === 'string' ? p.title : '',
-                price: p.price,
-                image_url: p.image_url,
-                description: p.description,
-                category: p.category as ThreeProduct['category'],
-              }))}
-              onAddToCart={addToCart}
-              onViewDetails={(id) => {
-                // Reuse navigation to product detail
-                window.location.href = `/product/${id}`
-              }}
-            />
+            <div className="w-full md:w-auto mt-4 md:mt-0 flex justify-center md:justify-end">
+              <Market3DButton
+                products={filteredProducts.map(p => ({
+                  ...p,
+                  name: typeof p.title === 'string' ? p.title : '',
+                  price: p.price,
+                  image_url: p.image_url,
+                  description: p.description,
+                  category: p.category as ThreeProduct['category'],
+                }))}
+                onAddToCart={addToCart}
+                onViewDetails={(id) => {
+                  // Reuse navigation to product detail
+                  window.location.href = `/product/${id}`
+                }}
+              />
+            </div>
           </div>
         </motion.div>
 
@@ -760,7 +768,9 @@ function MarketplaceContent() {
             </span>
             <span className="text-gray-400">→ Click the 💬 button in bottom-right corner</span>
           </div>
-          
+
+ 
+
           <div className="grid md:grid-cols-2 gap-4">
             {/* Search */}
             <div className="relative">
@@ -810,9 +820,19 @@ function MarketplaceContent() {
               </select>
             </div>
           </div>
-
-          {/* Collaborative Filter Toggle */}
-          <div className="mt-4 flex items-center justify-center">
+                 {/* Gifting & Collaborative Button Row */}
+          <div className="mb-4 mt-4 flex flex-col md:flex-row items-center justify-center gap-4">
+            <button
+              type="button"
+              aria-label="Giftable Products"
+              className={`px-4 py-2 rounded-lg font-medium transition-transform duration-200 ease-out transform will-change-transform flex items-center gap-2 shadow-sm hover:-translate-y-3.5 hover:scale-[1.02] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-orange-200  ${searchTerm === 'gift item'
+                ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-md border-yellow-500'
+                : 'bg-white hover:border-gray-400 dark:hover:border-gray-500'}
+              `}
+              onClick={() => setSearchTerm(searchTerm === 'gift item' ? '' : 'gift item')}
+            >
+              🎁 Giftable Products
+            </button>
             <button
               onClick={() => setShowCollaborativeOnly(!showCollaborativeOnly)}
               className={`px-4 py-2 rounded-lg font-medium transition-transform duration-200 ease-out transform will-change-transform flex items-center gap-2 shadow-sm hover:-translate-y-3.5 hover:scale-[1.02] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-orange-200 ${
@@ -826,6 +846,8 @@ function MarketplaceContent() {
             </button>
           </div>
         </motion.div>
+
+        
 
         {/* Products Grid */}
         <motion.div
@@ -857,7 +879,6 @@ function MarketplaceContent() {
                           🤝 Collab
                         </div>
                       )}
-                      
                       {product.image_url ? (
                         <img
                           src={product.image_url}
@@ -877,16 +898,13 @@ function MarketplaceContent() {
                       )}
                     </div>
                   </Link>
-                  
                   <div className="p-4">
                     <Link href={`/product/${product.id}`}>
                       <h3 className="font-semibold text-gray-900 mb-2 hover:text-orange-600 transition-colors">
                         {displayProducts.find(p => p.id === product.id)?.title || product.title}
                       </h3>
                     </Link>
-                    
                     <p className="text-sm text-gray-600 mb-2">{displayProducts.find(p => p.id === product.id)?.category || product.category}</p>
-                    
                     {/* Show collaborators or single seller */}
                     {product.isCollaborative && product.collaborators && product.collaborators.length > 0 ? (
                       <div className="text-xs mb-3   p-3 rounded-md border border-yellow-200/90 dark:border-yellow-700/30 shadow-sm">
@@ -910,7 +928,6 @@ function MarketplaceContent() {
                         })()}
                       </p>
                     )}
-                    
                     <div className="flex items-center justify-between">
                       <p className="text-lg font-bold text-orange-600 dark:text-orange-400">₹{product.price}</p>
                       <div className="flex space-x-2">
@@ -944,6 +961,23 @@ function MarketplaceContent() {
                           title={t('product.addToWishlist')}
                         >
                           <Heart className="w-4 h-4" />
+                        </button>
+                        {/* AR Button */}
+                        <button
+                          onClick={() => {
+                            setArImageUrl(product.image_url)
+                            setArProductType((product.product_type as 'vertical' | 'horizontal' | undefined) || 'vertical')
+                            setArOpen(true)
+                          }}
+                          className="group relative p-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-full hover:from-green-200 hover:to-emerald-200 transition-all duration-200 shadow-sm hover:shadow-md"
+                          title="View in Augmented Reality - Place this product in your space"
+                        >
+                          <span role="img" aria-label="AR" className="text-lg">📱</span>
+                          {/* Tooltip */}
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                            View in AR
+                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                          </div>
                         </button>
                       </div>
                     </div>
@@ -1013,7 +1047,9 @@ function MarketplaceContent() {
             </div>
           </motion.div>
         )}
-      </div>
+  </div>
+  {/* ARViewer Modal */}
+  <ARViewer open={arOpen} onClose={() => setArOpen(false)} imageUrl={arImageUrl} productType={arProductType} />
     </div>
   )
 }

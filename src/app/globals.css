@@ -23,6 +23,31 @@
   --heritage-blue: #3b5998;
   --heritage-brown: #7c5e3c;
   --heritage-accent: #e2c275;
+  
+  /* Traditional Indian Color Palette */
+  --saffron: #ff9933;
+  --saffron-light: #ffb366;
+  --saffron-dark: #e6851a;
+  --turquoise: #40e0d0;
+  --turquoise-light: #7fffd4;
+  --turquoise-dark: #20b2aa;
+  --maroon: #800000;
+  --maroon-light: #a52a2a;
+  --maroon-dark: #5c0000;
+  --royal-blue: #4169e1;
+  --royal-blue-light: #6495ed;
+  --royal-blue-dark: #191970;
+  --emerald: #50c878;
+  --emerald-light: #90ee90;
+  --emerald-dark: #228b22;
+  
+  /* Trust and Status Colors */
+  --trust-gold: #ffd700;
+  --trust-silver: #c0c0c0;
+  --trust-bronze: #cd7f32;
+  --verified-green: #00c851;
+  --warning-orange: #ff8800;
+  --danger-red: #ff4444;
 }
 
 /* Dark theme variables when data-theme="dark" on <html> */
@@ -49,11 +74,241 @@
   --heritage-blue: #6b8bd6;
   --heritage-brown: #8f6b4f;
   --heritage-accent: #aa8a4f;
+  
+  /* Traditional Indian Color Palette - Dark Theme */
+  --saffron: #ffb366;
+  --saffron-light: #ffcc99;
+  --saffron-dark: #e6851a;
+  --turquoise: #7fffd4;
+  --turquoise-light: #b3ffff;
+  --turquoise-dark: #40e0d0;
+  --maroon: #a52a2a;
+  --maroon-light: #cc4444;
+  --maroon-dark: #800000;
+  --royal-blue: #6495ed;
+  --royal-blue-light: #87ceeb;
+  --royal-blue-dark: #4169e1;
+  --emerald: #90ee90;
+  --emerald-light: #98fb98;
+  --emerald-dark: #50c878;
+  
+  /* Trust and Status Colors - Dark Theme */
+  --trust-gold: #ffd700;
+  --trust-silver: #e6e6e6;
+  --trust-bronze: #daa520;
+  --verified-green: #00ff88;
+  --warning-orange: #ffaa00;
+  --danger-red: #ff6666;
 }
 
 /* Smooth theme transition class added/removed by ThemeProvider */
 .theme-transition * {
   transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease, box-shadow 250ms ease;
+}
+
+/* Traditional Indian Design Elements */
+.indian-pattern {
+  background-image: 
+    radial-gradient(circle at 20% 20%, var(--saffron) 2px, transparent 2px),
+    radial-gradient(circle at 80% 80%, var(--turquoise) 1px, transparent 1px),
+    radial-gradient(circle at 40% 60%, var(--maroon) 1.5px, transparent 1.5px);
+  background-size: 30px 30px, 20px 20px, 25px 25px;
+  opacity: 0.1;
+}
+
+.mandala-border {
+  position: relative;
+}
+
+.mandala-border::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--saffron), var(--turquoise), var(--maroon), var(--royal-blue));
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+.rangoli-gradient {
+  background: linear-gradient(135deg, 
+    var(--saffron-light) 0%, 
+    var(--turquoise-light) 25%, 
+    var(--emerald-light) 50%, 
+    var(--royal-blue-light) 75%, 
+    var(--maroon-light) 100%);
+}
+
+.trust-badge {
+  background: linear-gradient(135deg, var(--trust-gold), var(--saffron));
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(255, 153, 51, 0.3);
+}
+
+.verified-badge {
+  background: linear-gradient(135deg, var(--verified-green), var(--emerald));
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(0, 200, 81, 0.3);
+}
+
+.specialization-badge {
+  background: linear-gradient(135deg, var(--royal-blue), var(--turquoise));
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(65, 105, 225, 0.3);
+}
+
+.achievement-badge {
+  background: linear-gradient(135deg, var(--maroon), var(--heritage-red));
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(128, 0, 0, 0.3);
+}
+
+/* Traditional Indian Card Styles */
+.indian-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(255, 255, 255, 0.7) 100%);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.indian-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--saffron), var(--turquoise), var(--maroon));
+  border-radius: inherit;
+  z-index: -1;
+  margin: -2px;
+}
+
+.indian-card-dark {
+  background: linear-gradient(135deg, 
+    rgba(7, 16, 41, 0.9) 0%, 
+    rgba(7, 16, 41, 0.7) 100%);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.indian-card-dark::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--saffron), var(--turquoise), var(--maroon));
+  border-radius: inherit;
+  z-index: -1;
+  margin: -2px;
+}
+
+/* Traditional Indian Button Styles */
+.btn-indian-primary {
+  background: linear-gradient(135deg, var(--saffron), var(--saffron-dark));
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(255, 153, 51, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-indian-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 153, 51, 0.4);
+}
+
+.btn-indian-secondary {
+  background: linear-gradient(135deg, var(--turquoise), var(--turquoise-dark));
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(64, 224, 208, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-indian-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(64, 224, 208, 0.4);
+}
+
+/* Traditional Indian Avatar Frame */
+.avatar-indian-frame {
+  position: relative;
+  background: linear-gradient(135deg, var(--saffron), var(--turquoise), var(--maroon), var(--royal-blue));
+  padding: 4px;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(255, 153, 51, 0.3);
+}
+
+.avatar-indian-frame::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--saffron), var(--turquoise), var(--maroon), var(--royal-blue));
+  border-radius: 50%;
+  z-index: -1;
+  animation: rotate 3s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Trust Score Display */
+.trust-score {
+  background: linear-gradient(135deg, var(--trust-gold), var(--saffron));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* Regional Craftsmanship Badges */
+.craft-badge-banarasi {
+  background: linear-gradient(135deg, #8B4513, #D2691E);
+  color: white;
+}
+
+.craft-badge-rajasthani {
+  background: linear-gradient(135deg, #FF6347, #FF4500);
+  color: white;
+}
+
+.craft-badge-kashmiri {
+  background: linear-gradient(135deg, #4169E1, #191970);
+  color: white;
+}
+
+.craft-badge-bengali {
+  background: linear-gradient(135deg, #228B22, #006400);
+  color: white;
+}
+
+.craft-badge-gujarati {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: white;
 }
 
 /* Mobile theme toggle styles */
@@ -183,10 +438,11 @@ body {
 }
 
 .glass-card {
-  background: var(--card);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--border);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
 }
 
 .glass-nav {
@@ -212,6 +468,58 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #ea580c, #dc2626);
+}
+
+/* Custom video slider */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-track {
+  background: rgba(255, 255, 255, 0.3);
+  height: 4px;
+  border-radius: 2px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--heritage-gold);
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(191, 161, 74, 0.5);
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: var(--heritage-accent);
+  box-shadow: 0 0 12px rgba(191, 161, 74, 0.8);
+}
+
+.slider::-moz-range-track {
+  background: rgba(255, 255, 255, 0.3);
+  height: 4px;
+  border-radius: 2px;
+  border: none;
+}
+
+.slider::-moz-range-thumb {
+  background: var(--heritage-gold);
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 8px rgba(191, 161, 74, 0.5);
+}
+
+.slider::-moz-range-thumb:hover {
+  background: var(--heritage-accent);
+  box-shadow: 0 0 12px rgba(191, 161, 74, 0.8);
 }
 
 /* Beautiful shadows */
@@ -269,6 +577,47 @@ body {
 }
 .btn-secondary:hover { background: rgba(0,0,0,0.04); }
 
+/* 3D Bazaar Button */
+.btn-3d-bazaar {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+  background-size: 200% 200%;
+  color: white;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1rem;
+  border: 2px solid rgba(255,255,255,0.3);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+  transition: all 300ms ease;
+  animation: gradient-shift 3s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-3d-bazaar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-3d-bazaar:hover::before {
+  left: 100%;
+}
+
+.btn-3d-bazaar:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(59, 130, 246, 0.4);
+  background-size: 300% 300%;
+}
+
+.btn-3d-bazaar:active {
+  transform: translateY(-1px) scale(1.01);
+}
+
 /* Text gradients */
 .text-gradient-primary { background: linear-gradient(135deg, var(--primary-600), var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .text-gradient-secondary { background: linear-gradient(135deg, var(--success), var(--primary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
@@ -288,13 +637,66 @@ body {
 .heritage-bg {
   background-color: var(--background);
   background-image:
-    url('/heritage-mandala.svg'),
     radial-gradient(circle at 20% 80%, rgba(191, 161, 74, 0.08) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(169, 68, 66, 0.07) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(226, 194, 117, 0.05) 0%, transparent 50%);
-  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
-  background-size: 400px, auto, auto, auto;
-  background-position: center, left, right, center;
+    radial-gradient(circle at 40% 40%, rgba(226, 194, 117, 0.05) 0%, transparent 50%),
+    /* Traditional Indian patterns */
+    radial-gradient(circle at 10% 20%, rgba(191, 161, 74, 0.03) 0%, transparent 30%),
+    radial-gradient(circle at 90% 80%, rgba(169, 68, 66, 0.03) 0%, transparent 30%),
+    radial-gradient(circle at 50% 10%, rgba(226, 194, 117, 0.02) 0%, transparent 25%);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  background-size: auto, auto, auto, 200px, 200px, 150px;
+  background-position: left, right, center, top left, bottom right, top center;
+}
+
+/* Enhanced Indian Cultural Patterns */
+.indian-pattern {
+  position: relative;
+  overflow: hidden;
+}
+
+.indian-pattern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(191, 161, 74, 0.1) 0%, transparent 20%),
+    radial-gradient(circle at 75% 75%, rgba(169, 68, 66, 0.1) 0%, transparent 20%),
+    radial-gradient(circle at 50% 50%, rgba(226, 194, 117, 0.05) 0%, transparent 15%);
+  background-size: 100px 100px, 80px 80px, 60px 60px;
+  background-position: 0 0, 50px 50px, 25px 25px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Traditional Border Patterns */
+.traditional-border {
+  position: relative;
+  border: 2px solid var(--heritage-gold);
+  border-radius: 1rem;
+}
+
+.traditional-border::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 1px dashed var(--heritage-accent);
+  border-radius: 1.25rem;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.traditional-border::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border: 1px solid var(--heritage-red);
+  border-radius: 1.5rem;
+  opacity: 0.2;
+  pointer-events: none;
 }
 
 /* Heritage Card Border */
@@ -370,6 +772,83 @@ body {
   animation-delay: 4s;
 }
 
+.floating-element:nth-child(4) {
+  animation-delay: 1s;
+}
+
+.floating-element:nth-child(5) {
+  animation-delay: 3s;
+}
+
+.floating-element:nth-child(6) {
+  animation-delay: 5s;
+}
+
+/* Enhanced floating animations */
+.floating-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+.floating-fast {
+  animation: float-fast 4s ease-in-out infinite;
+}
+
+/* Parallax scrolling effect */
+.parallax-element {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Intersection Observer animations */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide-in-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.slide-in-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide-in-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.slide-in-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.scale-in {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scale-in.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
 /* Animation delays */
 .animate-delay-100 { animation-delay: 0.1s; }
 .animate-delay-200 { animation-delay: 0.2s; }
@@ -378,6 +857,66 @@ body {
 .animate-delay-500 { animation-delay: 0.5s; }
 
 /* Responsive adjustments */
+@media (max-width: 640px) {
+  .section-padding {
+    padding: 4rem 1rem;
+  }
+  
+  .container-custom {
+    padding: 0 1rem;
+  }
+  
+  /* Mobile-specific hero adjustments */
+  .hero-title {
+    font-size: 3rem !important;
+    line-height: 1.1;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.25rem !important;
+  }
+  
+  /* Mobile video adjustments */
+  .video-container {
+    margin: 0;
+    padding: 0 1rem;
+  }
+  
+  /* Mobile card adjustments */
+  .card-glass {
+    padding: 1.5rem !important;
+  }
+  
+  /* Mobile button adjustments */
+  .btn-primary, .btn-secondary {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 1rem !important;
+  }
+  
+  /* Mobile stats grid */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+  
+  /* Mobile floating elements - reduce size */
+  .floating-element {
+    transform: scale(0.7);
+  }
+  
+  /* Ensure video section is fully visible on mobile */
+  .video-section {
+    padding: 3rem 1rem !important;
+    margin-bottom: 2rem !important;
+  }
+  
+  /* Video player mobile adjustments */
+  .video-player-mobile {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
 @media (min-width: 640px) {
   .section-padding {
     padding: 6rem 1.5rem;
@@ -385,6 +924,29 @@ body {
   
   .container-custom {
     padding: 0 1.5rem;
+  }
+  
+  .hero-title {
+    font-size: 5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 6rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.75rem;
+  }
+  
+  /* Tablet video adjustments */
+  .video-container {
+    margin: 0 auto;
   }
 }
 
@@ -395,6 +957,62 @@ body {
   
   .container-custom {
     padding: 0 2rem;
+  }
+  
+  .hero-title {
+    font-size: 7rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-title {
+    font-size: 8rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 2.25rem;
+  }
+  
+  .container-custom {
+    max-width: 90rem;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .glass-card, .glass {
+    backdrop-filter: blur(20px);
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .floating-element,
+  .floating-slow,
+  .floating-fast {
+    animation: none;
+  }
+  
+  .animate-slide-in-up,
+  .animate-slide-in-left,
+  .animate-slide-in-right,
+  .animate-fade-in,
+  .animate-scale-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  
+  .hover-lift:hover {
+    transform: none;
+  }
+  
+  .hover-scale:hover {
+    transform: none;
   }
 }
 

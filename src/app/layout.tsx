@@ -8,7 +8,6 @@ import ThemeProvider from '@/components/ThemeProvider'
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AIChatConditional from '@/components/AIChatConditional';
-import PageTransition from '@/components/PageTransition';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -50,10 +49,8 @@ export default async function RootLayout({
             <ThemeProvider>
             <div className="flex flex-col min-h-screen">
               <Navbar />
-                <main className="flex-1">
-                  <PageTransition>
-                    {children}
-                  </PageTransition>
+              <main className="flex-1">
+                {children}
               </main>
               <Footer />
             </div>

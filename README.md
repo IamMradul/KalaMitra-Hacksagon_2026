@@ -308,6 +308,7 @@ KalaMitra uses a warm, earthy palette and mandala-inspired backgrounds for a uni
 
 ## 🚀 Deployment
 
+### 🚀 Deployment
 KalaMitra is ready for deployment on Vercel, Netlify, Railway, or any platform supporting Next.js.
 
 
@@ -315,6 +316,7 @@ KalaMitra is ready for deployment on Vercel, Netlify, Railway, or any platform s
 
 ## 🤝 Contributing
 
+### 🤝 Contributing
 We welcome contributions! Please open issues or pull requests for improvements.
 
 
@@ -322,6 +324,7 @@ We welcome contributions! Please open issues or pull requests for improvements.
 
 ## 📄 License
 
+### 📄 License
 MIT License
 
 

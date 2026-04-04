@@ -1,14 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Search, Filter, ShoppingCart, Heart, Sparkles } from 'lucide-react'
+import { Search, Filter, ShoppingCart, Heart, Sparkles, Volume2, StopCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { logActivity } from '@/lib/activity'
 import { hammingDistanceHex as hammingHex } from '@/lib/image-similarity'
 import { Database } from '@/lib/supabase'
 import Link from 'next/link'
+import Market3DButton from '@/components/Market3DButton'
+import type { Product as ThreeProduct } from '@/types/product'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -63,6 +65,53 @@ export default function Marketplace() {
 }
 
 function MarketplaceContent() {
+  // Voice narration state
+  const [narratingId, setNarratingId] = useState<string | null>(null)
+  const synthRef = useRef<SpeechSynthesis | null>(typeof window !== 'undefined' ? window.speechSynthesis : null)
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
+
+  // Helper: get BCP-47 code for narration
+  const getNarrationLang = () => {
+    const lang = currentLanguage || i18n.language || 'en'
+    const langMap: Record<string, string> = {
+      en: 'en-IN', hi: 'hi-IN', assamese: 'as-IN', bengali: 'bn-IN', bodo: 'brx-IN', dogri: 'doi-IN', gujarati: 'gu-IN', kannad: 'kn-IN', kashmiri: 'ks-IN', konkani: 'kok-IN', maithili: 'mai-IN', malyalam: 'ml-IN', manipuri: 'mni-IN', marathi: 'mr-IN', nepali: 'ne-NP', oriya: 'or-IN', punjabi: 'pa-IN', sanskrit: 'sa-IN', santhali: 'sat-IN', sindhi: 'sd-IN', tamil: 'ta-IN', telgu: 'te-IN', urdu: 'ur-IN',
+      as: 'as-IN', bn: 'bn-IN', brx: 'brx-IN', doi: 'doi-IN', gu: 'gu-IN', kn: 'kn-IN', ks: 'ks-IN', kok: 'kok-IN', mai: 'mai-IN', ml: 'ml-IN', mni: 'mni-IN', mr: 'mr-IN', ne: 'ne-NP', or: 'or-IN', pa: 'pa-IN', sa: 'sa-IN', sat: 'sat-IN', sd: 'sd-IN', ta: 'ta-IN', te: 'te-IN', ur: 'ur-IN',
+    }
+    return langMap[lang] || lang
+  }
+
+  // Start narration for a product
+  const handleNarrate = (product: Product) => {
+    if (!('speechSynthesis' in window)) {
+      alert('Speech synthesis is not supported in this browser.')
+      return
+    }
+    // Stop any ongoing narration
+    if (synthRef.current && synthRef.current.speaking) {
+      synthRef.current.cancel()
+      setNarratingId(null)
+    }
+    // Compose narration text: title + product_story (heritage story)
+    const title = displayProducts.find(p => p.id === product.id)?.title || product.title
+    // Prefer product_story, fallback to description if not present
+    const story = typeof product.product_story === 'string' && product.product_story
+      ? product.product_story
+      : product.description || ''
+    const narration = `${title}. ${story}`
+    const utter = new window.SpeechSynthesisUtterance(narration)
+    utter.lang = getNarrationLang()
+    utter.onend = () => setNarratingId(null)
+    utter.onerror = () => setNarratingId(null)
+    utteranceRef.current = utter
+    setNarratingId(product.id)
+    synthRef.current?.speak(utter)
+  }
+
+  // Stop narration
+  const handleStopNarrate = () => {
+    synthRef.current?.cancel()
+    setNarratingId(null)
+  }
   const { user } = useAuth()
   const { t, i18n } = useTranslation()
   const { currentLanguage } = useLanguage()
@@ -83,6 +132,76 @@ function MarketplaceContent() {
   const [displayRecommended, setDisplayRecommended] = useState<ProductBase[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [showCollaborativeOnly, setShowCollaborativeOnly] = useState(false)
+
+    // Speech recognition for search input
+    const [isListening, setIsListening] = useState(false)
+    const recognitionRef = useRef<SpeechRecognition | null>(null)
+
+    // Map app language to BCP-47
+    const getSpeechLang = () => {
+      const lang = currentLanguage || i18n.language || 'en'
+      // Map app language to BCP-47 code (all names and short codes)
+      const langMap: Record<string, string> = {
+        en: 'en-IN',
+        hi: 'hi-IN',
+        assamese: 'as-IN',
+        bengali: 'bn-IN',
+        bodo: 'brx-IN',
+        dogri: 'doi-IN',
+        gujarati: 'gu-IN',
+        kannad: 'kn-IN',
+        kashmiri: 'ks-IN',
+        konkani: 'kok-IN',
+        maithili: 'mai-IN',
+        malyalam: 'ml-IN',
+        manipuri: 'mni-IN',
+        marathi: 'mr-IN',
+        nepali: 'ne-NP',
+        oriya: 'or-IN',
+        punjabi: 'pa-IN',
+        sanskrit: 'sa-IN',
+        santhali: 'sat-IN',
+        sindhi: 'sd-IN',
+        tamil: 'ta-IN',
+        telgu: 'te-IN',
+        urdu: 'ur-IN',
+        // Short codes
+        as: 'as-IN', bn: 'bn-IN', brx: 'brx-IN', doi: 'doi-IN', gu: 'gu-IN', kn: 'kn-IN', ks: 'ks-IN', kok: 'kok-IN', mai: 'mai-IN', ml: 'ml-IN', mni: 'mni-IN', mr: 'mr-IN', ne: 'ne-NP', or: 'or-IN', pa: 'pa-IN', sa: 'sa-IN', sat: 'sat-IN', sd: 'sd-IN', ta: 'ta-IN', te: 'te-IN', ur: 'ur-IN',
+      }
+      return langMap[lang] || lang
+    }
+
+    const handleMicClick = () => {
+      if (isListening) {
+        recognitionRef.current?.stop()
+        setIsListening(false)
+        return
+      }
+      let SpeechRecognitionCtor: typeof SpeechRecognition | undefined = undefined
+      if (typeof window !== 'undefined') {
+        SpeechRecognitionCtor = (window.SpeechRecognition || (window as Window & { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition) as typeof SpeechRecognition | undefined
+      }
+      if (!SpeechRecognitionCtor) {
+        alert('Speech recognition is not supported in this browser.')
+        return
+      }
+      const recognition = new SpeechRecognitionCtor()
+      recognition.lang = getSpeechLang()
+      recognition.interimResults = false
+      recognition.maxAlternatives = 1
+      recognition.onstart = () => setIsListening(true)
+      recognition.onend = () => setIsListening(false)
+      recognition.onerror = () => setIsListening(false)
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        if (event.results.length > 0) {
+          const transcript = event.results[0][0].transcript
+          setSearchTerm(transcript)
+        }
+        setIsListening(false)
+      }
+      recognitionRef.current = recognition
+      recognition.start()
+    }
 
   useEffect(() => {
     // Handle Google session from OAuth callback
@@ -599,12 +718,31 @@ function MarketplaceContent() {
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-bold heritage-title mb-4">
-            {t('marketplace.title')}
-          </h1>
-          <p className="text-lg text-[var(--heritage-brown)]">
-            {t('marketplace.subtitle')}
-          </p>
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-bold heritage-title mb-1">
+                {t('marketplace.title')}
+              </h1>
+              <p className="text-lg text-[var(--heritage-brown)]">
+                {t('marketplace.subtitle')}
+              </p>
+            </div>
+            <Market3DButton
+              products={filteredProducts.map(p => ({
+                ...p,
+                name: typeof p.title === 'string' ? p.title : '',
+                price: p.price,
+                image_url: p.image_url,
+                description: p.description,
+                category: p.category as ThreeProduct['category'],
+              }))}
+              onAddToCart={addToCart}
+              onViewDetails={(id) => {
+                // Reuse navigation to product detail
+                window.location.href = `/product/${id}`
+              }}
+            />
+          </div>
         </motion.div>
 
         {/* Search and Filter */}
@@ -632,10 +770,23 @@ function MarketplaceContent() {
                 placeholder={t('marketplace.searchInputPlaceholder')}
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full pl-10 pr-14 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                aria-label={t('marketplace.searchInputPlaceholder')}
               />
+              {/* Mic icon for speech input */}
+              <button
+                type="button"
+                onClick={handleMicClick}
+                className={`absolute right-3 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full border border-gray-300 shadow-sm hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors ${isListening ? 'text-orange-600' : 'text-gray-400'}`}
+                title={isListening ? t('marketplace.listening') : t('marketplace.speakToSearch')}
+                aria-label={t('marketplace.speakToSearch')}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18v3m0 0h-3m3 0h3m-3-3a6 6 0 006-6V9a6 6 0 10-12 0v3a6 6 0 006 6z" />
+                </svg>
+              </button>
               {isSearching && (
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="absolute right-12 top-1/2 transform -translate-y-1/2">
                   <div className="w-5 h-5 border-2 border-orange-200 border-t-orange-600 rounded-full animate-spin"></div>
                 </div>
               )}
@@ -763,6 +914,24 @@ function MarketplaceContent() {
                     <div className="flex items-center justify-between">
                       <p className="text-lg font-bold text-orange-600 dark:text-orange-400">₹{product.price}</p>
                       <div className="flex space-x-2">
+                        {/* Voice narration button */}
+                        {narratingId === product.id ? (
+                          <button
+                            onClick={handleStopNarrate}
+                            className="p-2 bg-orange-100 text-orange-600 rounded-full hover:bg-orange-200 transition-colors"
+                            title={t('product.stopNarration', { defaultValue: 'Stop Narration' })}
+                          >
+                            <StopCircle className="w-4 h-4 animate-pulse" />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleNarrate(product)}
+                            className="p-2 bg-orange-100 text-orange-600 rounded-full hover:bg-orange-200 transition-colors"
+                            title={t('product.listenNarration', { defaultValue: 'Listen to Product' })}
+                          >
+                            <Volume2 className="w-4 h-4" />
+                          </button>
+                        )}
                         <button
                           onClick={() => addToCart(product.id)}
                           className="p-2 bg-orange-100 text-orange-600 rounded-full hover:bg-orange-200 transition-colors"

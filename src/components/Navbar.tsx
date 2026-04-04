@@ -185,11 +185,6 @@ export default function Navbar() {
 
     fetchUnreadNotifications();
 
-    // Poll for unread notifications every 3 seconds
-    const pollInterval = setInterval(() => {
-      fetchUnreadNotifications();
-    }, 3000);
-
     // Subscribe to real-time notifications
     const channel = supabase
       .channel(`notifications:${user.id}`)
@@ -212,15 +207,17 @@ export default function Navbar() {
             setShowMobileNotificationDot(true);
             // Auto-hide toast after 5 seconds
             setTimeout(() => setNewNotificationToast(null), 5000);
+            
+            // Immediately increment count if the new notification is unread
+            if (!payload.new.read) {
+              setUnreadNotificationsCount(prev => prev + 1);
+            }
           }
-          // Refetch count on any change
-          fetchUnreadNotifications();
         }
       )
       .subscribe();
 
     return () => {
-      clearInterval(pollInterval);
       channel.unsubscribe();
     };
   }, [user?.id]);
@@ -250,11 +247,6 @@ export default function Navbar() {
 
     fetchNotifications();
 
-    // Poll for notifications every 3 seconds
-    const pollInterval = setInterval(() => {
-      fetchNotifications();
-    }, 3000);
-
     // Subscribe to real-time notification updates
     const channel = supabase
       .channel(`notifications-popup:${user.id}`)
@@ -266,14 +258,16 @@ export default function Navbar() {
           table: 'notifications',
           filter: `user_id=eq.${user.id}`,
         },
-        () => {
-          fetchNotifications();
+        (payload: any) => {
+          // Refetch after a small delay to ensure data consistency
+          setTimeout(() => {
+            fetchNotifications();
+          }, 100);
         }
       )
       .subscribe();
 
     return () => {
-      clearInterval(pollInterval);
       channel.unsubscribe();
     };
   }, [notificationsPopupOpen, user?.id]);
@@ -311,6 +305,13 @@ export default function Navbar() {
         .order('created_at', { ascending: false })
         .limit(10);
       setNotifications(data || []);
+
+      // Update unread notifications count immediately
+      if (data) {
+        const unreadCount = data.filter((n) => !n.read).length;
+        setUnreadNotificationsCount(unreadCount);
+        if (unreadCount === 0) setShowMobileNotificationDot(false);
+      }
     } catch (err) {
       console.error('Error marking notification as read:', err);
     }
@@ -762,9 +763,11 @@ export default function Navbar() {
                                         {!notif.read && (
                                           <button
                                             onClick={() => markNotificationRead(notif.id)}
-                                            className="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full hover:bg-blue-600 transition-colors"
+                                            className="flex-shrink-0 px-3 py-1 ml-2 bg-blue-500 text-white text-xs rounded-full hover:bg-blue-600 transition-colors shadow"
                                             title="Mark as read"
-                                          />
+                                          >
+                                            Mark as read
+                                          </button>
                                         )}
                                       </div>
                                     </div>

@@ -16,9 +16,8 @@
   <p style="font-size: 1.1em; color: #dc2626; font-weight: 600; margin-top: 0.5em;">Preserving Tradition, Empowering Artisans ✨</p>
 </div>
 <div align="center">
-  <b>🌐</b> <a href="https://kalaaamitra.vercel.app/" target="_blank">https://kalaaamitra.vercel.app/</a>
+  <b>🌐</b> <a href="https://www.kalamitra.store/" target="_blank">https://www.kalamitra.store/</a>
 </div>
-
 
 <br>
 
